@@ -1,7 +1,0 @@
-com\ecommerce\order\dto\ShippingAddressRequest.class
-com\ecommerce\order\model\Order.class
-com\ecommerce\order\dto\OrderItemRequest.class
-com\ecommerce\order\service\OrderService.class
-com\ecommerce\order\dto\OrderRequest.class
-com\ecommerce\order\client\ProductClient.class
-com\ecommerce\order\repository\OrderRepository.class

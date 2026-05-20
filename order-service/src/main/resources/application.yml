@@ -4,10 +4,12 @@ server:
 spring:
   application:
     name: order-service
+  config:
+    import: optional:file:../.env[.properties]
   datasource:
     url: jdbc:mysql://localhost:3306/ecommerce_order?createDatabaseIfNotExist=true
     username: root
-    password: ${DB_PASSWORD:anmol432006}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -17,10 +19,10 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
   mail:
-    host: ${SMTP_HOST:smtp.gmail.com}
-    port: ${SMTP_PORT:587}
-    username: ${SMTP_USERNAME:anmolprajapati802@gmail.com}
-    password: ${SMTP_PASSWORD:uckbgresxhwltxya}
+    host: ${SMTP_HOST}
+    port: ${SMTP_PORT}
+    username: ${SMTP_USERNAME}
+    password: ${SMTP_PASSWORD}
     properties:
       mail:
         smtp:
@@ -42,12 +44,12 @@ feign:
 
 app:
   razorpay:
-    key-id: ${RAZORPAY_KEY_ID:rzp_test_SoJh85MrdD59Ff}
-    key-secret: ${RAZORPAY_KEY_SECRET:lDiMQd3fHDOCqJMx66CrEyCc}
-    currency: ${RAZORPAY_CURRENCY:INR}
-    mock: ${RAZORPAY_MOCK:false}
+    key-id: ${RAZORPAY_KEY_ID}
+    key-secret: ${RAZORPAY_KEY_SECRET}
+    currency: ${RAZORPAY_CURRENCY}
+    mock: ${RAZORPAY_MOCK}
   mail:
     enabled: ${MAIL_ENABLED:true}
-    from: ${MAIL_FROM:anmolprajapati802@gmail.com}
+    from: ${MAIL_FROM}
   support:
-    email: ${SUPPORT_EMAIL:support@mystore.local}
+    email: ${SUPPORT_EMAIL}

@@ -1,5 +1,0 @@
-com\ecommerce\product\service\ImageStorageService.class
-com\ecommerce\product\model\Product.class
-com\ecommerce\product\ProductServiceApplication.class
-com\ecommerce\product\controller\ProductController.class
-com\ecommerce\product\repository\ProductRepository.class
