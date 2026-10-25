@@ -5,7 +5,7 @@ spring:
   application:
     name: order-service
   config:
-    import: optional:file:../.env[.properties]
+    import: optional:file:.env[.properties],optional:file:../.env[.properties],optional:file:./order-service/.env[.properties]
   datasource:
     url: jdbc:mysql://localhost:3306/ecommerce_order?createDatabaseIfNotExist=true
     username: root
@@ -19,16 +19,23 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
   mail:
-    host: ${SMTP_HOST}
-    port: ${SMTP_PORT}
-    username: ${SMTP_USERNAME}
-    password: ${SMTP_PASSWORD}
+    host: ${SMTP_HOST:smtp.gmail.com}
+    port: ${SMTP_PORT:587}
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_PASSWORD:}
+    default-encoding: UTF-8
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
+            required: true
+          connectiontimeout: 15000
+          timeout: 15000
+          writetimeout: 15000
+          ssl:
+            trust: smtp.gmail.com
 
 eureka:
   client:
@@ -50,6 +57,6 @@ app:
     mock: ${RAZORPAY_MOCK}
   mail:
     enabled: ${MAIL_ENABLED:true}
-    from: ${MAIL_FROM}
+    from: ${MAIL_FROM:${SMTP_USERNAME:}}
   support:
-    email: ${SUPPORT_EMAIL}
+    email: ${SUPPORT_EMAIL:${SMTP_USERNAME:}}

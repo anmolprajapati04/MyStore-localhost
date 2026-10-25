@@ -1,6 +1,7 @@
 package com.ecommerce.order.service;
 
 import com.ecommerce.order.client.ProductClient;
+import com.ecommerce.order.config.OrderPricing;
 import com.ecommerce.order.dto.*;
 import com.ecommerce.order.model.Order;
 import com.ecommerce.order.model.Payment;
@@ -9,13 +10,13 @@ import com.ecommerce.order.repository.OrderRepository;
 import com.ecommerce.order.repository.PaymentRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.razorpay.RazorpayClient;
-import jakarta.transaction.Transactional;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -45,9 +46,6 @@ public class PaymentService {
 
     @Autowired
     private OrderEventService orderEventService;
-
-    @Autowired
-    private EmailService emailService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -145,11 +143,8 @@ public class PaymentService {
             paymentRepository.save(payment);
 
             logger.info("Payment verified successfully and order #{} created for Razorpay Order ID: {}", order.getId(), request.getRazorpayOrderId());
-            
-            // Notify other services and send email
+
             orderEventService.publishPaymentSuccess(order, payment);
-            emailService.sendOrderConfirmation(order);
-            
             return toVerificationResponse(payment, order, "Payment verified and order confirmed");
         } catch (Exception ex) {
             logger.error("Error during payment verification", ex);
@@ -176,10 +171,11 @@ public class PaymentService {
     }
 
     private BigDecimal calculateTotal(List<OrderItemRequest> items) {
-        return items.stream()
+        BigDecimal itemsTotal = items.stream()
                 .map(item -> BigDecimal.valueOf(productClient.getProduct(item.getProductId()).getPrice())
                         .multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return itemsTotal.add(OrderPricing.DELIVERY_FEE);
     }
 
     private String createRazorpayOrder(long amountInPaise, String receipt) {

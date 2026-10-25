@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
 import { ToastProvider } from './components/Toast'
 import { ErrorBoundary } from './components/ErrorBoundary'
+import ShoppingAssistant from './components/ShoppingAssistant'
 import './index.css'
 
 // Code splitting — each page loads on demand
@@ -71,6 +72,7 @@ function App() {
                     </Routes>
                   </Suspense>
                 </main>
+                <ShoppingAssistant />
               </div>
             </Router>
           </ToastProvider>

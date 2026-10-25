@@ -54,6 +54,7 @@ export default function Checkout() {
 
   const [shipping, setShipping] = useState({
     customerName: user?.username || '',
+    customerEmail: user?.email || '',
     street: '', city: '', state: '', zipCode: '', country: 'India',
   })
   const [payment, setPayment] = useState({ method: 'CARD' })
@@ -61,6 +62,11 @@ export default function Checkout() {
   useEffect(() => {
     if (!user) { navigate('/login'); return }
     if (cartItems.length === 0) navigate('/cart')
+    setShipping(s => ({
+      ...s,
+      customerName: s.customerName || user.username || '',
+      customerEmail: s.customerEmail || user.email || '',
+    }))
   }, [user, cartItems, navigate])
 
   const handleShippingChange = e =>
@@ -75,7 +81,7 @@ export default function Checkout() {
       const orderData = {
         userId:         user.username,
         customerName:   shipping.customerName,
-        customerEmail:  user.email || `${user.username}@mystore.com`,
+        customerEmail:  shipping.customerEmail.trim(),
         paymentMethod:  payment.method,
         shippingAddress: {
           street:  shipping.street,
@@ -122,7 +128,7 @@ export default function Checkout() {
         order_id: paymentOrder.data.razorpayOrderId,
         prefill: {
           name: shipping.customerName,
-          email: user.email || `${user.username}@mystore.com`,
+          email: shipping.customerEmail.trim(),
         },
         theme: { color: '#111827' },
         modal: {
@@ -214,6 +220,18 @@ export default function Checkout() {
                 <input name="customerName" className="form-control" value={shipping.customerName} onChange={handleShippingChange} required />
               </div>
               <div className="form-group">
+                <label className="form-label">Email for order confirmation *</label>
+                <input
+                  name="customerEmail"
+                  type="email"
+                  className="form-control"
+                  placeholder="you@example.com"
+                  value={shipping.customerEmail}
+                  onChange={handleShippingChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
                 <label className="form-label">Street Address *</label>
                 <input name="street" className="form-control" placeholder="123 Main St" value={shipping.street} onChange={handleShippingChange} required />
               </div>
@@ -246,8 +264,13 @@ export default function Checkout() {
                 className="btn btn-primary btn-lg"
                 style={{ marginTop: '0.5rem' }}
                 onClick={() => {
+                  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((shipping.customerEmail || '').trim())
                   if (!shipping.customerName || !shipping.street || !shipping.city || !shipping.state || !shipping.zipCode) {
                     toast.warning('Please fill all required fields.')
+                    return
+                  }
+                  if (!emailOk) {
+                    toast.warning('Enter a valid email address to receive your order confirmation.')
                     return
                   }
                   setStep(1)
@@ -303,6 +326,9 @@ export default function Checkout() {
                 <div style={{ fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Deliver to</div>
                 <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{shipping.customerName}</div>
                 <div style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.2rem' }}>
+                  {shipping.customerEmail}
+                </div>
+                <div style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.2rem' }}>
                   {shipping.street}, {shipping.city}, {shipping.state} — {shipping.zipCode}, {shipping.country}
                 </div>
               </div>
@@ -310,7 +336,7 @@ export default function Checkout() {
               <div style={{ background: 'var(--bg-secondary)', borderRadius: 'var(--radius)', padding: '1.25rem', marginBottom: '1.5rem' }}>
                 <div style={{ fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Payment</div>
                 <div style={{ fontWeight: 600 }}>
-                  {{ CARD: 'Card', UPI: 'UPI', NETBANKING: 'Net banking', WALLET: 'Wallet' }[payment.method]}
+                  {{ CARD: 'Card / Net Banking / UPI', COD: 'Cash on Delivery', UPI: 'UPI', NETBANKING: 'Net banking', WALLET: 'Wallet' }[payment.method]}
                 </div>
               </div>
 

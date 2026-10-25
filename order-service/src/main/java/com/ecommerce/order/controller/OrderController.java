@@ -48,10 +48,6 @@ public class OrderController {
     public ResponseEntity<Order> createOrder(@Valid @RequestBody OrderRequest orderRequest) {
         try {
             Order order = orderService.createOrder(orderRequest);
-            
-            // In a real application, you would trigger email notification here
-            // notificationService.sendOrderConfirmation(order);
-            
             return ResponseEntity.ok(order);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();

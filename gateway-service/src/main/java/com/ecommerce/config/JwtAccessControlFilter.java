@@ -27,6 +27,16 @@ public class JwtAccessControlFilter implements GlobalFilter, Ordered {
         HttpMethod method = exchange.getRequest().getMethod();
 
         if (isPublic(path, method)) {
+            Claims publicClaims = parseClaims(exchange);
+            if (publicClaims != null) {
+                ServerWebExchange identified = exchange.mutate()
+                        .request(exchange.getRequest().mutate()
+                                .header("X-Authenticated-User", publicClaims.getSubject())
+                                .header("X-Authenticated-Role", publicClaims.get("role", String.class))
+                                .build())
+                        .build();
+                return chain.filter(identified);
+            }
             return chain.filter(exchange);
         }
 
@@ -85,6 +95,7 @@ public class JwtAccessControlFilter implements GlobalFilter, Ordered {
     private boolean isPublic(String path, HttpMethod method) {
         return path.startsWith("/api/auth/signin")
                 || path.startsWith("/api/auth/signup")
+                || path.startsWith("/api/assistant")
                 || (path.startsWith("/api/products") && !path.startsWith("/api/products/wishlist") && HttpMethod.GET.equals(method));
     }
 
