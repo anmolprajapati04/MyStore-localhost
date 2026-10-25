@@ -8,15 +8,15 @@ import { formatINR } from '../utils/currencyUtils'
 import { FALLBACK_IMAGE_URI, handleImageError } from '../utils/imageUtils'
 
 const QUICK_PROMPTS = [
+  'Items for kids',
   'Compare Sony TVs',
-  'Best laptop under 90000',
-  'Show running shoes',
+  'Gifts under 2000',
   'How do returns work?',
 ]
 
 const welcomeMessage = () => ({
   role: 'bot',
-  reply: "Hi, I'm Mira — your MyStore shopping assistant. Ask me to find products, compare items, or help with orders and delivery.",
+  reply: "Hi, I'm Mira. Ask me the way you would in a store — “items for kids”, “compare Sony TVs”, or “gifts under 2000”. I only recommend products from this catalog.",
   suggestions: QUICK_PROMPTS,
 })
 
